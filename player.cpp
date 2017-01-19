@@ -1,3 +1,6 @@
+// CS2 Assignment 9 Part 1, Winter 2017
+// Author: Soon Wei Daniel Lim
+
 #include "player.hpp"
 
 /*

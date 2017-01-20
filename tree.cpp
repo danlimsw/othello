@@ -77,7 +77,7 @@ void Node::growNode(int numGen)
   }
 }
 
-int Node::getNodeScore(Side side) 
+int Node::getNodeScore(Side mySide) 
 {
   if (children.empty()) 
   {
@@ -85,7 +85,7 @@ int Node::getNodeScore(Side side)
     int numWhite = board->countWhite();
     int numBlack = board->countBlack();
     int score;
-    if (side == Side::WHITE) 
+    if (mySide == Side::WHITE) 
     {
       score = numWhite - numBlack;
     }
@@ -96,21 +96,38 @@ int Node::getNodeScore(Side side)
     // TODO: modulate the score based on pieces in the corner or at the sides
     return score;
   }
-  else
-  {
-    // if there are children, return the minimum score of all the children
+  else if (mySide != nextToPlay)
+  { // then the opponent should pick the option that is most detrimental to me
+    // if there are children, check whose turn it is
+   //  return the minimum score of all the children
     vector<Node*>::iterator it;
     int min = 1000000; // dummy integer
     int childScore;
     for (it = children.begin(); it != children.end(); it++) 
     {
-      childScore = (*it)->getNodeScore(side);
+      childScore = (*it)->getNodeScore(mySide);
       if (childScore < min) 
       {
         min = childScore;  
       }
     } 
     assert(childScore != 1000000); // ensure that the childScore was updated
+    return childScore;
+  }
+ else if (mySide == nextToPlay)
+  { // then i should pick the option that is most beneficial to me
+    vector<Node*>::iterator it;
+    int max = -1000000; // dummy integer
+    int childScore;
+    for (it = children.begin(); it != children.end(); it++) 
+    {
+      childScore = (*it)->getNodeScore(mySide);
+      if (childScore > max) 
+      {
+        max = childScore;  
+      }
+    } 
+    assert(childScore != -1000000); // ensure that the childScore was updated
     return childScore;
   }
 }

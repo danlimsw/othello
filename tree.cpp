@@ -82,18 +82,17 @@ int Node::getNodeScore(Side mySide)
   if (children.empty()) 
   {
     // then just return the score of the current board
-    int numWhite = board->countWhite();
-    int numBlack = board->countBlack();
+    // int numWhite = board->countWhite();
+    // int numBlack = board->countBlack();
     int score;
     if (mySide == Side::WHITE) 
     {
-      score = numWhite - numBlack;
+      score = board->getWhiteValue();
     }
     else 
     {
-      score = numBlack - numWhite;
+      score = -board->getWhiteValue();
     }
-    // TODO: modulate the score based on pieces in the corner or at the sides
     return score;
   }
   else if (mySide != nextToPlay)
@@ -114,7 +113,7 @@ int Node::getNodeScore(Side mySide)
     assert(childScore != 1000000); // ensure that the childScore was updated
     return childScore;
   }
- else if (mySide == nextToPlay)
+ else
   { // then i should pick the option that is most beneficial to me
     vector<Node*>::iterator it;
     int max = -1000000; // dummy integer

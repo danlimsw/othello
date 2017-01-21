@@ -14,6 +14,7 @@ public:
   Side oppSide;
   Player(Side side);
   ~Player();
+  int moveNumber;
 
     Move *doMove(Move *opponentsMove, int msLeft);
 

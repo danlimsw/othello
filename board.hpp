@@ -15,7 +15,10 @@ private:
     bool get(Side side, int x, int y);
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
-
+    bitset<64> getStableArray(); // checks if pieces are stable just by looking
+                                 // at filled rows and columns
+    bool isYFull(int x); 
+    bool isXFull(int y);
 public:
     Board();
     ~Board();
@@ -30,6 +33,10 @@ public:
     int countWhite();
 
     void setBoard(char data[]);
+    int getWhiteValue(); // this function gets the current value of the board
+                         // from white's perspective. this considers edge
+                         // and corners to be more valuable than intermediate
+                         // pieces
 };
 
 #endif

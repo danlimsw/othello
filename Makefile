@@ -1,5 +1,5 @@
 CC          = g++
-CFLAGS      = -std=c++11 -Wall -pedantic -g
+CFLAGS      = -std=c++11 -Wall -pedantic -ggdb -DNDEBUG
 OBJS        = player.o board.o tree.o
 PLAYERNAME  = player
 

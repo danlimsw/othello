@@ -25,6 +25,7 @@ Player::Player(Side side) {
   board = new Board();
   mySide = side;
   oppSide = flip(side);
+  moveNumber = 0;
   //cerr << "finished creating player" << endl;
 }
 
@@ -55,6 +56,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
+  moveNumber += 1;
   if (opponentsMove == nullptr || board->isDone()) 
   {
     // then the board does not need to be updated. the opponent did not make a
@@ -83,8 +85,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
   tree.root = root;
   tree.currentDepth = 0;
   //cerr << "decision tree constructed" << endl;
-  // now proceed to grow the tree to 2 generations
-  tree.growTree(2); // this must be even!
+  // now proceed to grow the tree to n generations
+  if (moveNumber < 50) {tree.growTree(6);}
+  else {tree.growTree(8);}
   //cerr << "decision tree grown" << endl;
 
   // get the best move from the grown tree

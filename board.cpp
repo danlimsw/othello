@@ -1,4 +1,5 @@
 #include "board.hpp"
+#include <vector>
 
 /*
  * Make a standard 8x8 othello board and initialize it to the standard setup.
@@ -177,4 +178,153 @@ void Board::setBoard(char data[]) {
             taken.set(i);
         }
     }
+}
+// this function gets the current value of the board from white's perspective
+int Board::getWhiteValue()
+{
+  int cornerValue = 3; // deny corners!
+  int edgeValue = 2;
+  int normalValue = 1;
+  int stableValue = 3;
+  int blackTotal = 0;
+  int whiteTotal = 0;
+  // first check the non-edge non-corner locations
+  for (int i = 1; i < 7; i++) 
+  {
+    for (int j = 1; j < 7; j++) 
+    {
+      if (black[i+8*j])
+        // then the location has a black piece
+      {
+        blackTotal += normalValue;
+      }
+      else if (taken[i+8*j])
+      {
+        // then the location has a white piece
+        whiteTotal += normalValue;
+      }
+    } 
+  }
+  // now check the edge locations
+  for (int i = 1; i < 7; i++)
+  { 
+    // check top edge
+    if (black[i]) {blackTotal += edgeValue;}
+    else if (taken[i]) {whiteTotal += edgeValue;}
+  
+    // check left edge
+    if (black[8*i]) {blackTotal += edgeValue;}
+    else if (taken[8*i]) {whiteTotal += edgeValue;}
+  
+    // check bottom edge
+    if (black[i+7*8]) {blackTotal += edgeValue;}
+    else if (taken[i+7*8]) {whiteTotal += edgeValue;}
+
+    // check right edge
+    if (black[7+8*i]) {blackTotal += edgeValue;}
+    else if (taken[7+8*i]) {whiteTotal += edgeValue;}
+  }
+  // now check corner locations
+  if (black[0]) {blackTotal += cornerValue;}
+  else if (taken[0]) {whiteTotal += cornerValue;}
+  
+  if (black[7]) {blackTotal += cornerValue;}
+  else if (taken[7]) {whiteTotal += cornerValue;}
+ 
+  if (black[56]) {blackTotal += cornerValue;}
+  else if (taken[56]) {whiteTotal += cornerValue;}
+
+  if (black[63]) {blackTotal += cornerValue;}
+  else if (taken[63]) {whiteTotal += cornerValue;}
+
+  // check for stability and award additional points
+  bitset<64> stable = getStableArray();
+  if (stable.count() != 0)
+  {
+    // then there are stable positions
+    for (int i = 0; i < 64; i++)
+    {
+      if (stable[i])
+      {
+        if (black[i]) {blackTotal += stableValue;}
+        else if (taken[i]) {whiteTotal += stableValue;}
+      }
+    }
+  }
+
+  return (whiteTotal - blackTotal);
+}
+
+bool Board::isYFull(int x)
+{ // checks if the vertical is full at position x
+  bool full = true;
+  for (int y = 0; y < 8; y++)
+  {
+    if (!taken[x+8*y]) {full = false;}
+  }
+  return full;
+}
+
+bool Board::isXFull(int y)
+{
+  bool full = true;
+  for (int x = 0; x < 8; x++)
+  {
+    if (!taken[x+8*y]) {full = false;}
+  }
+  return full;
+}
+
+bitset<64> Board::getStableArray()
+{
+// calculates whether each piece is currently stable
+  bitset<64> stable;
+  stable.reset();
+  vector<int> xFull;
+  vector<int> yFull;
+  for (int i = 0; i < 8; i++)
+  {
+    if (isYFull(i)) {yFull.push_back(i);}
+    if (isXFull(i)) {xFull.push_back(i);}
+  }
+  for (int i = 0; i < (int) xFull.size(); i++) 
+  {
+    for (int j = 0; j < (int) yFull.size(); j++)
+    {
+      stable.set(i+8*j);
+    }
+  }
+  // add the corner pieces
+  stable.set(0);
+  stable.set(7);
+  stable.set(56);
+  stable.set(63);
+
+  // now evaluate to check if there are any pieces surrounded by stable pieces
+  // check the central region:
+  for (int i = 1; i < 7; i++) 
+  {
+    for (int j = 1; j < 7; j++)
+    {
+      if (stable[(i-1)+8*(j-1)] && stable[(i-1)+8*(j+1)] 
+       && stable[(i+1)+8*(j-1)] && stable[(i+1)+8*(j+1)]
+       && taken[i+8*j])
+      {
+        // if position i,j is surrounded by stable pieces, it is stable as well
+        stable.set(i+8*j);
+      }
+    }
+  }
+  // now check the edges
+  for (int i = 1; i < 7; i++)
+  {
+    if (stable[i-1] && stable[i+1] && taken[i]) {stable.set(i);}
+    if (stable[56+i-1] && stable[56+i-1] && taken[56+i]) {stable.set(56+i);}
+    if (stable[8*(i-1)] && stable[8*(i+1)] && taken[8*i]) {stable.set(8*i);}
+    if (stable[7+8*(i-1)] && stable[7+8*(i+1)] && taken[7+8*i])
+    {
+      stable.set(7+8*i);
+    }
+  }
+  return stable;
 }

@@ -182,8 +182,8 @@ void Board::setBoard(char data[]) {
 // this function gets the current value of the board from white's perspective
 int Board::getWhiteValue()
 {
-  int cornerValue = 3; // deny corners!
-  int edgeValue = 2;
+  int cornerValue = 5; // deny corners!
+  int edgeValue = 3;
   int normalValue = 1;
   int stableValue = 3;
   int blackTotal = 0;

@@ -86,9 +86,15 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
   tree.currentDepth = 0;
   //cerr << "decision tree constructed" << endl;
   // now proceed to grow the tree to n generations
-  if (testingMinimax)
+  //if (testingMinimax)
+  //{
+  //  tree.growTree(2);
+  //}
+  //else
+  //{
+  if (msLeft < 30000)
   {
-    tree.growTree(2);
+    tree.growTree(4); // speed is of the essence for the last 30 seconds!
   }
   else
   {
@@ -96,6 +102,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     else {tree.growTree(8);}
     //cerr << "decision tree grown" << endl;
   }
+  //}
   // get the best move from the grown tree
   Move * lastMoveSent = new Move(-1, -1);
   Move * bestMove = tree.getBestMove(mySide);
